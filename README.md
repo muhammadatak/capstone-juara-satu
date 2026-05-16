@@ -10,6 +10,16 @@ INSTALL UV DI CMD SU
 pip install uv
 ```
 
+BUAT FILE .env di BACKEND dan isi dengan yang diberikan atak
+```bash
+whatsapp atak
+```
+
+COPY MODEL KE backend/services/model
+```bash
+whatsapp atak
+```
+
 Masuk ke folder backend LEWAT TERMINAL VSCODE AJA NEW TERMINAL WINDOW:
 
 ```bash
