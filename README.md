@@ -38,6 +38,11 @@ KALO BELOM ADA tulisan "(backend)" di terminal
 .venv/Scripts/activate
 ````
 
+MIGRASI SEK SU
+```bash
+alembic upgrade head
+```
+
 RUN BACKEND
 ```bash
 fastapi dev
@@ -76,9 +81,6 @@ docker run -d --name my-postgres -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=123
 
 TERAKHIR INI Y
 
-```bash
-alembic upgrade head
-```
 
 ## KALO GABISA YAUDA
 
