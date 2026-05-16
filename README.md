@@ -62,7 +62,6 @@ Jalankan frontend:
 npm run dev
 ```
 
-Jalankan migrasi database:
 
 ## KETIGA SU MENJALANKAN POSTGRES NDEK DOCKER SU
 1. BUKA DULU DOCKER DESKTOP
