@@ -60,6 +60,7 @@ class Ticket(Base):
     ai_suggestion: Mapped[str] = mapped_column(Text, nullable=True)
     whitelist_check: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     risk_score: Mapped[int] = mapped_column(Integer, nullable=True)
+    ml_score: Mapped[int] = mapped_column(Integer, nullable=True)
     status: Mapped[TicketStatus] = mapped_column(
         SAEnum(TicketStatus), default=TicketStatus.on_review.value, nullable=False
     )

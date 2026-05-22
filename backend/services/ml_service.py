@@ -9,7 +9,7 @@ from transformers import (
 )
 import torch
 
-model = "D:/FINAL_CAPSTONE_BACKEND/me/backend/services/model"
+model = "D:/capstone-juara-satu/backend/services/model"
 tokenizer = AutoTokenizer.from_pretrained(model)
 model = AutoModelForSequenceClassification.from_pretrained(model)
 

@@ -60,12 +60,14 @@ async def create_submission(
         url=ticket_data.url,
         phone_number=ticket_data.phone_number,
         type=ticket_data.type,
+        ml_score=ml_score,
         uuid=uuid,
     )
     whitelist_check = build_whitelist_check(new_ticket)
     risk_score = calculate_risk_score(ml_score, whitelist_check)
     summary = {
         "type": ticket_data.type.value,
+        "ml_score": ml_score,
         "risk_score": risk_score,
         "whitelist_check": whitelist_check,
     }

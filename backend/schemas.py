@@ -47,6 +47,7 @@ class TicketResponse(TicketBase):
     status: TicketStatus
     admin_note: str | None = Field(default=None)
     created_at: datetime
+    ml_score: int | None = Field(default=None)
 
 
 class TicketUpdate(BaseModel):
