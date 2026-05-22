@@ -225,10 +225,10 @@ export default function LaporanPage() {
     try {
       const mainField  = jenisCfg.fields.find((f) => f.isMain)
       const mainValue  = fieldValues[mainField?.id] || ''
-      const extraParts = jenisCfg.fields
-        .filter((f) => !f.isMain && fieldValues[f.id])
-        .map((f) => fieldValues[f.id])
-      const combined = [mainValue, ...extraParts].join(' ')
+      
+      // Only include main content, no extra parts
+      const content = mainValue
+      
       const phishingSenderEmail =
         selectedJenis === 'Email' ? (fieldValues.emailPengirim?.trim() || null) : null
 
@@ -243,7 +243,7 @@ export default function LaporanPage() {
         fullname: form.nama.trim(),
         sender_email: form.email.trim(),
         email: phishingSenderEmail,
-        content: combined,
+        content: content,
         url: selectedJenis === 'URL' ? mainValue : (fieldValues.linkUrl || null),
         phone_number: fieldValues.nomorPengirim || null,
         type: typeMap[selectedJenis],
