@@ -3,9 +3,6 @@ WHITELIST_WEIGHT = 0.8
 
 
 def _calculate_whitelist_score(whitelist_check: dict) -> int:
-    if not whitelist_check.get("whitelist_value"):
-        return 0
-
     if not whitelist_check.get("is_whitelisted", False):
         return 100
 
