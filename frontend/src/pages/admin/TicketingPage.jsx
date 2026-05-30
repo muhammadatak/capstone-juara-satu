@@ -17,15 +17,22 @@ export default function TicketingPage() {
   const [jenisFilter, setJenisFilter] = useState('Semua')
   const [search, setSearch] = useState('')
 
-  const filtered = tickets.filter((t) => {
-    const score = t.adminOverrideScore ?? t.riskScore
-    const matchStatus   = statusFilter === 'Semua'  || t.status === statusFilter
-    const matchRisiko   = risikoFilter === 'Semua'  || (risikoFilter === 'Tinggi' && score >= 70) || (risikoFilter === 'Sedang' && score >= 40 && score < 70) || (risikoFilter === 'Rendah' && score < 40)
-    const matchValidasi = validasiFilter === 'Semua' || (validasiFilter === 'Pending' && !t.adminValidated) || (validasiFilter === 'Tervalidasi' && t.adminValidated)
-    const matchJenis    = jenisFilter === 'Semua'   || t.jenis === jenisFilter
-    const matchSearch   = !search || t.id.toLowerCase().includes(search.toLowerCase()) || t.pelapor?.toLowerCase().includes(search.toLowerCase()) || t.pesan?.toLowerCase().includes(search.toLowerCase())
-    return matchStatus && matchRisiko && matchValidasi && matchJenis && matchSearch
-  })
+  const filtered = tickets
+    .filter((t) => {
+      const score = t.adminOverrideScore ?? t.riskScore
+      const matchStatus   = statusFilter === 'Semua'  || t.status === statusFilter
+      const matchRisiko   = risikoFilter === 'Semua'  || (risikoFilter === 'Tinggi' && score >= 70) || (risikoFilter === 'Sedang' && score >= 40 && score < 70) || (risikoFilter === 'Rendah' && score < 40)
+      const matchValidasi = validasiFilter === 'Semua' || (validasiFilter === 'Pending' && !t.adminValidated) || (validasiFilter === 'Tervalidasi' && t.adminValidated)
+      const matchJenis    = jenisFilter === 'Semua'   || t.jenis === jenisFilter
+      const matchSearch   = !search || t.id.toLowerCase().includes(search.toLowerCase()) || t.pelapor?.toLowerCase().includes(search.toLowerCase()) || t.pesan?.toLowerCase().includes(search.toLowerCase())
+      return matchStatus && matchRisiko && matchValidasi && matchJenis && matchSearch
+    })
+    .sort((a, b) => {
+      // Sort by risk score descending (highest first for triage)
+      const scoreA = a.adminOverrideScore ?? a.riskScore
+      const scoreB = b.adminOverrideScore ?? b.riskScore
+      return scoreB - scoreA
+    })
 
   const counts = {
     Semua: tickets.length,

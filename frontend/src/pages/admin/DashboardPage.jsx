@@ -3,7 +3,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import AdminSidebar from '../../components/AdminSidebar'
 import { RiskBadge, StatusBadge, ValidationBadge, JenisBadge } from '../../components/Badges'
 import { useTickets } from '../../context/TicketContext'
-import { WEEKLY_TREND, MODUS_DATA } from '../../data/dummyData'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
@@ -54,7 +53,7 @@ export default function DashboardPage() {
             <div className="card p-5 lg:col-span-2">
               <h3 className="text-sm font-semibold text-gray-700 mb-4">Tren Laporan 7 Hari Terakhir</h3>
               <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={WEEKLY_TREND} barSize={16}>
+                <BarChart data={stats.weeklyTrend} barSize={16}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="hari" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
@@ -68,7 +67,7 @@ export default function DashboardPage() {
             <div className="card p-5">
               <h3 className="text-sm font-semibold text-gray-700 mb-4">Distribusi Modus</h3>
               <div className="space-y-3">
-                {MODUS_DATA.map((m) => (
+                {stats.modesDistribution.map((m) => (
                   <div key={m.name}>
                     <div className="flex justify-between text-xs text-gray-600 mb-1">
                       <span>{m.name}</span><span className="font-semibold">{m.value}%</span>

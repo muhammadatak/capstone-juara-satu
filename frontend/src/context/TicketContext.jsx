@@ -176,17 +176,68 @@ export function TicketProvider({ children }) {
 
   const getTicketById = (id) => tickets.find((t) => t.id === id)
 
-  const stats = useMemo(
-    () => ({
+  const stats = useMemo(() => {
+    // Calculate trend for last 7 days
+    const now = new Date()
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    
+    // Create day labels (last 7 days)
+    const dayLabels = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000)
+      dayLabels.push(d.toLocaleDateString('id-ID', { weekday: 'short' }))
+    }
+    
+    // Group tickets by day for last 7 days
+    const trendByDay = {}
+    dayLabels.forEach((label) => {
+      trendByDay[label] = { total: 0, risikoTinggi: 0 }
+    })
+    
+    tickets.forEach((t) => {
+      const ticketDate = new Date(t.tanggal)
+      if (ticketDate >= sevenDaysAgo) {
+        const dayLabel = ticketDate.toLocaleDateString('id-ID', { weekday: 'short' })
+        if (trendByDay[dayLabel]) {
+          trendByDay[dayLabel].total++
+          if (t.riskScore >= 70) {
+            trendByDay[dayLabel].risikoTinggi++
+          }
+        }
+      }
+    })
+    
+    const weeklyTrend = dayLabels.map((hari) => ({
+      hari,
+      laporan: trendByDay[hari].total,
+      risiko_tinggi: trendByDay[hari].risikoTinggi,
+    }))
+    
+    // Calculate distribution by type (jenis)
+    const modesCounts = {}
+    tickets.forEach((t) => {
+      modesCounts[t.jenis] = (modesCounts[t.jenis] || 0) + 1
+    })
+    
+    const total = Object.values(modesCounts).reduce((a, b) => a + b, 0)
+    const modesDistribution = Object.entries(modesCounts)
+      .map(([name, count]) => ({
+        name,
+        value: total > 0 ? Math.round((count / total) * 100) : 0,
+      }))
+      .sort((a, b) => b.value - a.value)
+    
+    return {
       total: tickets.length,
       open: tickets.filter((t) => t.status === 'Open').length,
       investigasi: tickets.filter((t) => t.status === 'Investigasi').length,
       closed: tickets.filter((t) => t.status === 'Closed').length,
       risikoTinggi: tickets.filter((t) => t.riskScore >= 70).length,
       belumDivalidasi: tickets.filter((t) => !t.adminValidated).length,
-    }),
-    [tickets]
-  )
+      weeklyTrend,
+      modesDistribution,
+    }
+  }, [tickets])
 
   return (
     <TicketContext.Provider
