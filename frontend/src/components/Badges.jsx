@@ -45,6 +45,28 @@ export function ValidationBadge({ validated }) {
   )
 }
 
+export function DecisionBadge({ decision }) {
+  if (decision === 'phising') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
+        Phising
+      </span>
+    )
+  }
+  if (decision === 'legit') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">
+        Legit
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full">
+      Belum diputuskan
+    </span>
+  )
+}
+
 export function ScoreRing({ score, size = 'md' }) {
   const sizeClass = size === 'sm' ? 'w-9 h-9 text-xs' : 'w-12 h-12 text-sm'
   const colorClass = score >= 70

@@ -1,20 +1,21 @@
 from contextlib import asynccontextmanager
-from typing import Annotated
 from routers import admins
-from sqlalchemy import select
 
-from database import Base, engine, get_db
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from database import engine
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.staticfiles import StaticFiles
 from routers import tickets
+from services.url_crawler import crawler
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    yield
-    # Shutdown
-    await engine.dispose()
+    try:
+        yield
+    finally:
+        await crawler.close()
+        await engine.dispose()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -25,6 +26,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.mount(
+    "/screenshots",
+    StaticFiles(directory=str(crawler.screenshot_dir)),
+    name="screenshots",
 )
 
 app.include_router(tickets.router, prefix="/tickets", tags=["tickets"])

@@ -3,8 +3,11 @@ import { AuthProvider } from './context/AuthContext'
 import { TicketProvider } from './context/TicketContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
+import ArtikelPage from './pages/nasabah/ArtikelPage'
+import ArticleDetailPage from './pages/nasabah/ArticleDetailPage'
 import LaporanPage from './pages/nasabah/LaporanPage'
 import LandingPage from './pages/nasabah/LandingPage'
+import CekStatusPage from './pages/nasabah/CekStatusPage'
 import LoginPage from './pages/admin/LoginPage'
 import DashboardPage from './pages/admin/DashboardPage'
 import TicketingPage from './pages/admin/TicketingPage'
@@ -17,7 +20,10 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/artikel" element={<ArtikelPage />} />
+            <Route path="/artikel/:slug" element={<ArticleDetailPage />} />
             <Route path="/laporan" element={<LaporanPage />} />
+            <Route path="/cek-status" element={<CekStatusPage />} />
             <Route path="/admin" element={<LoginPage />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/admin/ticketing" element={<ProtectedRoute><TicketingPage /></ProtectedRoute>} />

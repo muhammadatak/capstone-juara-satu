@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import AdminSidebar from '../../components/AdminSidebar'
-import { RiskBadge, StatusBadge, ValidationBadge, JenisBadge } from '../../components/Badges'
+import { RiskBadge, JenisBadge, DecisionBadge } from '../../components/Badges'
 import { useTickets } from '../../context/TicketContext'
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -100,6 +100,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
+                    <DecisionBadge decision={t.adminDecision} />
                     <RiskBadge score={t.adminOverrideScore ?? t.riskScore} />
                     {!t.adminValidated && (
                       <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full">⏳</span>

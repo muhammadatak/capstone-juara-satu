@@ -30,6 +30,11 @@ class TicketStatus(str, enum.Enum):
     reviewed = "reviewed"
 
 
+class AdminDecision(str, enum.Enum):
+    phising = "phising"
+    legit = "legit"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -46,11 +51,13 @@ class Ticket(Base):
         String(36), unique=True, index=True, default=lambda: str(uuid.uuid4())
     )
     # creds
-    fullname: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    sender_email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    fullname: Mapped[str] = mapped_column(String(50), unique=False, nullable=False)
+    sender_email: Mapped[str] = mapped_column(String(120), unique=False, nullable=False)
     # message
     content: Mapped[str] = mapped_column(Text, nullable=False)
     url: Mapped[str] = mapped_column(Text, nullable=True)
+    final_url: Mapped[str] = mapped_column(Text, nullable=True)
+    screenshot_uuid: Mapped[str] = mapped_column(String(36), nullable=True)
     phone_number: Mapped[str] = mapped_column(String, nullable=True)
     email: Mapped[str] = mapped_column(String(120), unique=False, nullable=True)
     type: Mapped[TicketType] = mapped_column(SAEnum(TicketType), nullable=False)
@@ -63,6 +70,9 @@ class Ticket(Base):
     ml_score: Mapped[int] = mapped_column(Integer, nullable=True)
     status: Mapped[TicketStatus] = mapped_column(
         SAEnum(TicketStatus), default=TicketStatus.on_review.value, nullable=False
+    )
+    admin_decision: Mapped[AdminDecision | None] = mapped_column(
+        SAEnum(AdminDecision), nullable=True
     )
     admin_note: Mapped[str] = mapped_column(Text, nullable=True)
 

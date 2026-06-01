@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, Field, EmailStr
 from datetime import datetime
-from models import TicketStatus, TicketType
+from models import TicketStatus, TicketType, AdminDecision
 
 
 class WhitelistCheckItem(BaseModel):
@@ -28,9 +28,13 @@ class TicketPublicResponse(TicketBase):
     model_config = ConfigDict(from_attributes=True)
 
     uuid: str
+    ai_suggestion: str | None = Field(default=None)
     risk_score: int | None = Field(default=None)
     whitelist_check: WhitelistCheckItem | None = Field(default=None)
+    admin_decision: AdminDecision | None = Field(default=None)
     admin_note: str | None = Field(default=None)
+    final_url: str | None = Field(default=None)
+    screenshot_uuid: str | None = Field(default=None, max_length=36)
     status: TicketStatus
     created_at: datetime
 
@@ -44,7 +48,10 @@ class TicketResponse(TicketBase):
     ai_suggestion: str | None = Field(default=None)
     whitelist_check: WhitelistCheckItem | None = Field(default=None)
     risk_score: int | None = Field(default=None)
+    final_url: str | None = Field(default=None)
+    screenshot_uuid: str | None = Field(default=None, max_length=36)
     status: TicketStatus
+    admin_decision: AdminDecision | None = Field(default=None)
     admin_note: str | None = Field(default=None)
     created_at: datetime
     ml_score: int | None = Field(default=None)
@@ -52,4 +59,5 @@ class TicketResponse(TicketBase):
 
 class TicketUpdate(BaseModel):
     status: TicketStatus | None = None
+    admin_decision: AdminDecision | None = None
     admin_note: str | None = None

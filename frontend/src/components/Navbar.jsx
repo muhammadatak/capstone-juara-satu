@@ -7,7 +7,9 @@ const LANDING_TOP_NAV = [
   { label: 'CIMB Niaga Syariah' },
   { label: 'Investor' },
   { label: 'About Us' },
+  { label: 'Artikel', to: '/artikel' },
   { label: 'Laporan Phising', to: '/laporan' },
+  { label: 'Cek Status', to: '/cek-status' },
 ]
 
 export default function Navbar() {

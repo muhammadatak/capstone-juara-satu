@@ -16,7 +16,7 @@ client = Groq(api_key=GROQ_API_KEY)
 def explain_with_groq(prompt: str):
     try:
         resp = client.chat.completions.create(
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-120b",
             messages=[{"role": "system", "content": prompt}],
             temperature=0.2,
             max_tokens=400,
@@ -47,10 +47,12 @@ INPUT:
 {json.dumps(summary, indent=2)}
 
 FORMAT OUTPUT (WAJIB):
-1. Ringkasan (maks 2 kalimat)
-2. Alasan utama (2–3 poin)
-3. Kekuatan bukti: kuat / sedang / lemah
-4. Saran (maks 3 poin)
+- Tulis tepat 3 baris, masing-masing diawali label berikut:
+  1) Risk Score:
+  2) Whitelist:
+  3) Saran:
+- Maksimal 3 kalimat per baris
+- Satu baris = satu topik
 
 GAYA:
 - Singkat, langsung
