@@ -48,8 +48,11 @@ const API_TO_UI_FIELD_MAP = {
   status: 'status',
   risk_score: 'riskScore',
   admin_note: 'adminNotes',
+  admin_decision: 'adminDecision',
   ai_suggestion: 'aiSuggestion',
   whitelist_check: 'whitelistCheck',
+  final_url: 'crawlFinalUrl',
+  screenshot_uuid: 'crawlScreenshotUuid',
 }
 
 const ALLOWED_BACKEND_TYPES = new Set(Object.keys(TYPE_LABEL))
@@ -90,6 +93,8 @@ const toUiTicket = (raw, source = 'admin') => {
   const riskScore = Number(raw.risk_score ?? 0)
   const uiStatus = STATUS_TO_UI[raw.status] || raw.status
   const whitelistCheck = raw.whitelist_check || {}
+  const screenshotUuid = raw.screenshot_uuid || ''
+  const screenshotUrl = screenshotUuid ? `${API_URL}/screenshots/${screenshotUuid}.png` : ''
   return {
     // Endpoint public saat ini belum selalu kirim id, jadi uuid dipakai sebagai fallback identifier UI.
     id: String(raw.id ?? raw.uuid),
@@ -114,7 +119,11 @@ const toUiTicket = (raw, source = 'admin') => {
     adminValidated: raw.status === 'reviewed',
     adminOverrideScore: null,
     adminNotes: raw.admin_note || '',
+    adminDecision: raw.admin_decision || '',
     aiSuggestion: raw.ai_suggestion || '',
+    crawlFinalUrl: raw.final_url || '',
+    crawlScreenshotUuid: screenshotUuid,
+    crawlScreenshotUrl: screenshotUrl,
   }
 }
 
@@ -154,6 +163,19 @@ export function TicketProvider({ children }) {
     return created
   }
 
+  const upsertTicket = (ticket) => {
+    setTickets((prev) =>
+      sortByDateDesc([ticket, ...prev.filter((t) => t.uuid !== ticket.uuid)])
+    )
+  }
+
+  const fetchPublicTicket = async (uuid) => {
+    const { data } = await api.get(`/tickets/${uuid}`)
+    const ticket = toUiTicket(data, 'public')
+    upsertTicket(ticket)
+    return ticket
+  }
+
   const patchTicket = async (id, payload) => {
     const { data } = await api.patch(`/admin/tickets/${id}`, payload)
     const updated = toUiTicket(data, 'admin')
@@ -163,10 +185,11 @@ export function TicketProvider({ children }) {
     return updated
   }
 
-  const validateTicket = async (id, { notes }) =>
+  const validateTicket = async (id, { notes, decision }) =>
     patchTicket(id, {
       status: 'reviewed',
       admin_note: notes?.trim() || null,
+      admin_decision: decision || null,
     })
 
   const updateStatus = async (id, status) =>
@@ -248,6 +271,7 @@ export function TicketProvider({ children }) {
         apiToUiFieldMap: API_TO_UI_FIELD_MAP,
         refreshTickets,
         submitTicket,
+        fetchPublicTicket,
         validateTicket,
         updateStatus,
         getTicketById,

@@ -12,6 +12,7 @@ from services.ml_service import predict_text
 from services.llm_helper import make_llm_explanation
 from services.risk_score import calculate_risk_score
 from services.whitelist_check import build_whitelist_check
+from services.url_crawler import crawler
 
 from services.email_utils import send_ticket_uuid
 
@@ -51,7 +52,8 @@ async def create_submission(
 ):
 
     uuid = await generate_ticket_code(db)
-    ml_score = predict_text(ticket_data.content)
+    use_ml = ticket_data.type != models.TicketType.url
+    ml_score = predict_text(ticket_data.content) if use_ml else None
     new_ticket = models.Ticket(
         fullname=ticket_data.fullname,
         sender_email=ticket_data.sender_email,
@@ -64,7 +66,7 @@ async def create_submission(
         uuid=uuid,
     )
     whitelist_check = build_whitelist_check(new_ticket)
-    risk_score = calculate_risk_score(ml_score, whitelist_check)
+    risk_score = calculate_risk_score(ml_score, whitelist_check, use_ml=use_ml)
     summary = {
         "type": ticket_data.type.value,
         "ml_score": ml_score,
@@ -75,6 +77,16 @@ async def create_submission(
     new_ticket.risk_score = risk_score
     new_ticket.ai_suggestion = make_llm_explanation(summary)
     new_ticket.whitelist_check = whitelist_check
+
+    if ticket_data.type == models.TicketType.url:
+        if not ticket_data.url:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="URL is required for url ticket type",
+            )
+        # crawl_result = await crawler.crawl(ticket_data.url)
+        # new_ticket.final_url = crawl_result["final_url"]
+        # new_ticket.screenshot_uuid = crawl_result["screenshot_uuid"]
 
     db.add(new_ticket)
     await db.commit()

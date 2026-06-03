@@ -23,7 +23,7 @@ export default function AdminSidebar() {
             <span className="text-white font-black text-sm">C</span>
           </div>
           <div>
-            <div className="text-white font-bold text-sm">PhishGuard</div>
+            <div className="text-white font-bold text-sm">AmbaPhish</div>
             <div className="text-gray-400 text-[9px]">Admin Panel</div>
           </div>
         </div>

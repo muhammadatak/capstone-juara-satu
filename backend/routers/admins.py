@@ -59,6 +59,16 @@ async def update_ticket(
             detail="Ticket not found",
         )
 
+    if (
+        ticket_data.status == models.TicketStatus.reviewed
+        and ticket_data.admin_decision is None
+        and ticket.admin_decision is None
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="admin_decision is required when reviewing ticket",
+        )
+
     update_data = ticket_data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         setattr(ticket, field, value)

@@ -1,0 +1,283 @@
+export const ARTIKEL_DATA = [
+  {
+    id: 1,
+    slug: 'mengenal-phishing-perbankan',
+    kategori: 'Edukasi',
+    tag: 'Pemula',
+    tagImage: 'assets/tags/pemula.svg',
+    coverClass: 'from-slate-900 via-slate-700 to-rose-900',
+    coverImage: 'assets/phissing.jpg',
+    judul: 'Mengenal Phishing Perbankan: Jenis, Cara Kerja, dan Dampaknya',
+    ringkasan: 'Phishing perbankan adalah kejahatan siber yang semakin canggih. Pelajari bagaimana penipu beroperasi dan bagaimana melindungi diri Anda.',
+    tanggal: '28 Maret 2026',
+    bacaan: '5 menit',
+    konten: [
+      {
+        tipe: 'paragraf',
+        isi: 'Phishing adalah salah satu bentuk kejahatan siber paling umum yang menargetkan nasabah perbankan. Pelaku berpura-pura menjadi institusi tepercaya seperti bank, perusahaan teknologi, atau layanan pemerintah untuk mencuri informasi sensitif seperti kata sandi, nomor rekening, dan kode OTP.',
+      },
+      { tipe: 'subjudul', isi: 'Jenis-Jenis Phishing yang Perlu Diwaspadai' },
+      {
+        tipe: 'list',
+        items: [
+          { judul: 'SMS Phishing (Smishing)', isi: 'Pesan teks yang mengklaim berasal dari bank, berisi link ke halaman login palsu atau meminta Anda menghubungi nomor tertentu.' },
+          { judul: 'Email Phishing', isi: 'Email yang tampak resmi dengan logo bank asli, meminta verifikasi akun atau memperingatkan tentang aktivitas mencurigakan.' },
+          { judul: 'WhatsApp Phishing', isi: 'Pesan WA dari nomor tak dikenal yang menawarkan hadiah, promo, atau menakut-nakuti korban agar segera mengklik link.' },
+          { judul: 'Voice Phishing (Vishing)', isi: 'Panggilan telepon dari CS bank yang meminta kode OTP atau data pribadi dengan alasan keamanan.' },
+        ],
+      },
+      { tipe: 'subjudul', isi: 'Mengapa Phishing Sangat Berbahaya?' },
+      {
+        tipe: 'paragraf',
+        isi: 'Kerugian finansial akibat phishing bisa terjadi dalam hitungan menit. Begitu penipu mendapatkan akses ke akun Anda, mereka dapat mentransfer dana, mengubah kata sandi, dan mengunci Anda dari akun sendiri. Selain kerugian uang, data pribadi yang dicuri juga bisa digunakan untuk kejahatan lain seperti pembukaan kartu kredit palsu.',
+      },
+      {
+        tipe: 'callout',
+        warna: 'red',
+        isi: 'Pada tahun 2024, CIMB Niaga mencatat lebih dari 1.200 insiden phishing dengan total kerugian mencapai Rp 50 miliar. Angka ini hanya dari kasus yang dilaporkan; kasus sesungguhnya diperkirakan jauh lebih banyak.',
+      },
+      { tipe: 'subjudul', isi: 'Langkah Pertama: Kenali Polanya' },
+      {
+        tipe: 'paragraf',
+        isi: 'Hampir semua pesan phishing memiliki pola yang sama: menciptakan urgensi, menjanjikan hadiah, atau menakut-nakuti. Begitu Anda mengenali pola ini, pertahanan pertama sudah terpasang.',
+      },
+    ],
+  },
+  {
+    id: 2,
+    slug: 'cara-baca-url-phishing',
+    kategori: 'Panduan',
+    tag: 'Penting',
+    tagImage: 'assets/tags/penting.svg',
+    coverClass: 'from-indigo-900 via-violet-700 to-cyan-700',
+    coverImage: 'assets/phissing.jpg',
+    judul: '5 Cara Membaca URL untuk Mendeteksi Link Phishing Sebelum Diklik',
+    ringkasan: 'Tidak semua link berbahaya terlihat mencurigakan. Pelajari teknik sederhana untuk menganalisis URL sebelum Anda klik.',
+    tanggal: '22 Maret 2026',
+    bacaan: '4 menit',
+    konten: [
+      {
+        tipe: 'paragraf',
+        isi: 'URL phishing dirancang untuk terlihat semirip mungkin dengan domain asli. Penipu memanfaatkan kelengahan kita yang biasanya tidak memeriksa URL secara detail. Berikut adalah 5 teknik sederhana yang bisa Anda gunakan.',
+      },
+      { tipe: 'subjudul', isi: '1. Periksa Domain Utama (Bukan Subdomain)' },
+      {
+        tipe: 'paragraf',
+        isi: 'Bagian terpenting URL adalah domain utama. Jangan terkecoh oleh subdomain. Contoh: cimbniaga.login-secure.xyz terlihat ada cimbniaga-nya, tapi domain utamanya adalah login-secure.xyz yang sama sekali bukan milik CIMB Niaga.',
+      },
+      {
+        tipe: 'contoh',
+        items: [
+          { label: '✅ Asli', url: 'https://www.cimbniaga.co.id/login', aman: true },
+          { label: '❌ Palsu', url: 'https://cimbniaga.login-secure.xyz', aman: false },
+          { label: '❌ Palsu', url: 'https://secure-cimb-update.com/verify', aman: false },
+        ],
+      },
+      { tipe: 'subjudul', isi: '2. Waspadai TLD yang Tidak Lazim' },
+      {
+        tipe: 'paragraf',
+        isi: 'Bank resmi di Indonesia menggunakan .co.id atau .com. Waspada jika Anda melihat domain berakhiran .xyz, .net, .web.id, .site, atau ekstensi aneh lainnya untuk layanan perbankan.',
+      },
+      { tipe: 'subjudul', isi: '3. Hati-hati dengan Karakter yang Mirip' },
+      {
+        tipe: 'paragraf',
+        isi: 'Penipu sering mengganti huruf dengan karakter yang terlihat serupa: cimbn1aga, cimb-niaga, atau cirnbniaga. Perhatikan dengan teliti setiap karakter.',
+      },
+      { tipe: 'subjudul', isi: '4. Curigai Link yang Dipersingkat' },
+      {
+        tipe: 'paragraf',
+        isi: 'Link seperti bit.ly, tinyurl.com, atau t.co menyembunyikan tujuan aslinya. Bank resmi tidak pernah mengirim link yang dipersingkat kepada nasabah. Jika Anda menerima link seperti ini yang mengklaim dari bank, anggap mencurigakan.',
+      },
+      { tipe: 'subjudul', isi: '5. Periksa HTTPS, Tapi Jangan Terlalu Percaya' },
+      {
+        tipe: 'paragraf',
+        isi: 'HTTPS dan ikon gembok hanya menandakan koneksi terenkripsi, bukan bahwa situsnya aman. Banyak situs phishing juga menggunakan HTTPS. Gembok bukan jaminan keamanan, tetap periksa domain utamanya.',
+      },
+      {
+        tipe: 'callout',
+        warna: 'blue',
+        isi: 'Tips cepat: Jika ragu dengan sebuah link, jangan klik. Buka browser baru dan ketik langsung alamat resmi cimbniaga.co.id.',
+      },
+    ],
+  },
+  {
+    id: 3,
+    slug: 'otp-rahasia-mutlak',
+    kategori: 'Keamanan',
+    tag: 'Wajib Baca',
+    tagImage: 'assets/tags/wajib-baca.svg',
+    coverClass: 'from-rose-950 via-red-800 to-orange-700',
+    coverImage: 'assets/phissing.jpg',
+    judul: 'OTP Itu Rahasia Mutlak: Mengapa Bank Tidak Pernah Memintanya',
+    ringkasan: 'Satu kesalahan paling umum korban phishing: memberikan kode OTP kepada penipu yang mengaku sebagai CS bank. Ini penjelasannya.',
+    tanggal: '15 Maret 2026',
+    bacaan: '3 menit',
+    konten: [
+      {
+        tipe: 'paragraf',
+        isi: 'One-Time Password (OTP) adalah kode 6 digit yang dikirim ke nomor HP Anda sebagai lapisan keamanan tambahan. Setiap kode hanya berlaku sekali dan dalam waktu sangat singkat, biasanya 5 menit.',
+      },
+      { tipe: 'subjudul', isi: 'Mengapa Bank Tidak Pernah Meminta OTP?' },
+      {
+        tipe: 'paragraf',
+        isi: 'Sistem bank dirancang sehingga tidak ada karyawan yang perlu, bisa, atau boleh meminta OTP Anda. OTP hanya diketahui oleh sistem bank dan Anda. Bahkan tim keamanan bank sendiri tidak dapat melihat kode OTP yang dikirimkan ke HP Anda.',
+      },
+      {
+        tipe: 'callout',
+        warna: 'red',
+        isi: 'Halo, saya dari CS CIMB Niaga. Ada transaksi mencurigakan di akun Anda. Mohon konfirmasi kode OTP yang baru saja dikirim. Ini adalah penipuan. Tutup teleponnya segera.',
+      },
+      { tipe: 'subjudul', isi: 'Skenario Penipuan OTP yang Paling Umum' },
+      {
+        tipe: 'list',
+        items: [
+          { judul: 'Telepon darurat', isi: 'Penipu menelepon mengklaim ada transaksi mencurigakan dan meminta OTP untuk membatalkan transaksi tersebut.' },
+          { judul: 'WhatsApp CS palsu', isi: 'Nomor WA dengan foto profil logo CIMB mengirim pesan dan meminta OTP untuk verifikasi akun.' },
+          { judul: 'Link verifikasi', isi: 'Anda mengklik link phishing, halaman palsu meminta Anda memasukkan OTP yang baru saja dikirimkan.' },
+          { judul: 'Survei berhadiah', isi: 'Penipu meminta OTP dengan dalih konfirmasi pemenang hadiah dari program bank.' },
+        ],
+      },
+      { tipe: 'subjudul', isi: 'Yang Harus Dilakukan Jika Sudah Terlanjur Memberikan OTP' },
+      {
+        tipe: 'paragraf',
+        isi: 'Segera hubungi call center CIMB Niaga di 14041 (tersedia 24 jam). Minta blokir akun sementara dan laporkan kejadian ini. Semakin cepat Anda melapor, semakin besar peluang kerugian dapat diminimalisir.',
+      },
+    ],
+  },
+  {
+    id: 4,
+    slug: 'whitelist-dan-nlp-phishguard',
+    kategori: 'Teknologi',
+    tag: 'Teknis',
+    tagImage: 'assets/tags/teknis.svg',
+    coverClass: 'from-slate-950 via-slate-800 to-cyan-700',
+    coverImage: 'assets/phissing.jpg',
+    judul: 'Bagaimana PhishGuard Mendeteksi Phishing: Whitelist & NLP',
+    ringkasan: 'Di balik layar sistem PhishGuard, ada dua mekanisme utama yang bekerja bersama: validasi whitelist dan analisis bahasa berbasis AI.',
+    tanggal: '10 Maret 2026',
+    bacaan: '6 menit',
+    konten: [
+      {
+        tipe: 'paragraf',
+        isi: 'Ketika Anda mengirimkan laporan ke PhishGuard, sistem langsung menjalankan dua proses analisis secara paralel. Kedua proses ini menghasilkan skor risiko dari 0 hingga 100 yang mencerminkan tingkat bahaya konten yang dilaporkan.',
+      },
+      { tipe: 'subjudul', isi: 'Proses 1: Ekstraksi dan Validasi Whitelist (Bobot 80%)' },
+      {
+        tipe: 'paragraf',
+        isi: 'Langkah pertama adalah ekstraksi. Sistem menggunakan Regular Expression untuk mengidentifikasi dan mengambil semua URL, nomor telepon, dan alamat email dari teks laporan Anda.',
+      },
+      {
+        tipe: 'list',
+        items: [
+          { judul: 'Ekstraksi URL', isi: 'Mendeteksi semua tautan dalam pesan, termasuk yang dipersingkat atau tanpa https://.' },
+          { judul: 'Ekstraksi Nomor Telepon', isi: 'Mendeteksi nomor dengan format +62, 08xx, dan variasinya.' },
+          { judul: 'Ekstraksi Email', isi: 'Mengidentifikasi alamat email termasuk email pengirim yang disebutkan dalam teks.' },
+        ],
+      },
+      {
+        tipe: 'paragraf',
+        isi: 'Setiap komponen yang berhasil diekstrak kemudian dicocokkan dengan database whitelist resmi CIMB Niaga. Jika ada komponen yang tidak ditemukan di whitelist, sistem langsung memberi poin risiko sebesar +80.',
+      },
+      { tipe: 'subjudul', isi: 'Proses 2: Analisis NLP - Deteksi Pola Bahasa (Bobot 20%)' },
+      {
+        tipe: 'paragraf',
+        isi: 'Sambil whitelist check berjalan, model Natural Language Processing berbasis IndoBERT yang sudah di-fine-tune menganalisis pola bahasa dalam teks. Model ini dilatih untuk mengenali ciri khas pesan phishing seperti pola urgensi palsu, iming-iming hadiah, dan ancaman pemblokiran.',
+      },
+      {
+        tipe: 'callout',
+        warna: 'blue',
+        isi: 'Jika tidak ada URL, nomor, atau email dalam pesan, sistem mengandalkan sepenuhnya analisis NLP dengan bobot 100%. Ini penting untuk mendeteksi social engineering murni.',
+      },
+      { tipe: 'subjudul', isi: 'Peran Admin dalam Proses Validasi' },
+      {
+        tipe: 'paragraf',
+        isi: 'Hasil analisis otomatis bersifat sementara sampai divalidasi oleh Officer Bank. Admin dapat mengkonfirmasi skor otomatis atau melakukan override jika ditemukan konteks yang tidak bisa ditangkap oleh model.',
+      },
+    ],
+  },
+  {
+    id: 5,
+    slug: 'tips-keamanan-mobile-banking',
+    kategori: 'Tips',
+    tag: 'Praktis',
+    tagImage: 'assets/tags/praktis.svg',
+    coverClass: 'from-emerald-950 via-teal-700 to-cyan-700',
+    coverImage: 'assets/phissing.jpg',
+    judul: '10 Tips Keamanan Mobile Banking yang Wajib Diterapkan Sekarang',
+    ringkasan: 'Keamanan akun mobile banking dimulai dari kebiasaan sehari-hari. Cek apakah Anda sudah menerapkan semua tips ini.',
+    tanggal: '5 Maret 2026',
+    bacaan: '4 menit',
+    konten: [
+      {
+        tipe: 'paragraf',
+        isi: 'Aplikasi mobile banking seperti OCTO by CIMB Niaga sudah dilengkapi dengan sistem keamanan berlapis. Namun keamanan digital bukan hanya tanggung jawab bank, kebiasaan Anda sehari-hari juga sangat menentukan.',
+      },
+      {
+        tipe: 'list',
+        items: [
+          { judul: '1. Aktifkan kunci biometrik', isi: 'Gunakan sidik jari atau Face ID sebagai lapisan keamanan tambahan di aplikasi OCTO.' },
+          { judul: '2. Jangan gunakan WiFi publik', isi: 'Hindari transaksi perbankan di WiFi kafe, mall, atau tempat umum. Gunakan data seluler pribadi.' },
+          { judul: '3. Perbarui aplikasi secara rutin', isi: 'Setiap update biasanya mengandung perbaikan keamanan. Aktifkan auto-update untuk aplikasi bank.' },
+          { judul: '4. Gunakan PIN yang unik', isi: 'Jangan gunakan tanggal lahir, 123456, atau PIN yang sama dengan aplikasi lain.' },
+          { judul: '5. Aktifkan notifikasi transaksi', isi: 'Pastikan notifikasi push untuk setiap transaksi aktif sehingga Anda langsung tahu jika ada aktivitas mencurigakan.' },
+          { judul: '6. Logout setelah selesai', isi: 'Selalu logout dari aplikasi banking, jangan hanya minimize atau tutup.' },
+          { judul: '7. Jangan screenshot OTP', isi: 'Screenshot bisa tersinkronisasi ke cloud atau terlihat oleh aplikasi lain.' },
+          { judul: '8. Waspadai aplikasi palsu', isi: 'Unduh OCTO hanya dari Google Play Store atau App Store resmi. Verifikasi publisher: CIMB Niaga.' },
+          { judul: '9. Periksa izin aplikasi', isi: 'Jangan berikan izin kamera, mikrofon, atau kontak ke aplikasi banking kecuali benar-benar diperlukan.' },
+          { judul: '10. Lapor jika ada yang aneh', isi: 'Segera hubungi 14041 jika ada transaksi yang tidak Anda kenali atau jika akun berperilaku aneh.' },
+        ],
+      },
+      {
+        tipe: 'callout',
+        warna: 'green',
+        isi: 'Sudah menerapkan semua 10 tips di atas? Bagus. Langkah berikutnya adalah memastikan orang-orang di sekitar Anda juga memahami tips ini.',
+      },
+    ],
+  },
+  {
+    id: 6,
+    slug: 'social-engineering-tanpa-link',
+    kategori: 'Keamanan',
+    tag: 'Lanjutan',
+    tagImage: 'assets/tags/lanjutan.svg',
+    coverClass: 'from-slate-900 via-indigo-800 to-fuchsia-800',
+    coverImage: 'assets/phissing.jpg',
+    judul: 'Social Engineering: Penipuan yang Tidak Butuh Link atau Malware',
+    ringkasan: 'Tidak semua penipuan menggunakan link berbahaya. Pelajari bagaimana manipulasi psikologis bisa sama berbahayanya dengan phishing teknis.',
+    tanggal: '28 Februari 2026',
+    bacaan: '5 menit',
+    konten: [
+      {
+        tipe: 'paragraf',
+        isi: 'Social engineering adalah teknik manipulasi psikologis yang memanfaatkan kepercayaan, rasa takut, dan rasa ingin tahu manusia, bukan kelemahan teknis sistem. Penipu tidak perlu meretas sistem bank Anda; mereka cukup menipu Anda untuk memberikan akses sendiri.',
+      },
+      { tipe: 'subjudul', isi: 'Teknik Social Engineering yang Paling Umum di Perbankan' },
+      {
+        tipe: 'list',
+        items: [
+          { judul: 'Impersonasi CS Bank', isi: 'Penipu menelepon mengklaim sebagai CS, menggunakan nada profesional, dan mengetahui beberapa data Anda untuk membangun kepercayaan.' },
+          { judul: 'Pretexting', isi: 'Menciptakan skenario palsu untuk menciptakan urgensi.' },
+          { judul: 'Baiting', isi: 'Tawaran yang terlalu menggiurkan untuk memancing korban.' },
+          { judul: 'Quid Pro Quo', isi: 'Menawarkan bantuan teknis palsu dengan imbalan data sensitif.' },
+        ],
+      },
+      { tipe: 'subjudul', isi: 'Mengapa Ini Sulit Dideteksi Secara Teknis?' },
+      {
+        tipe: 'paragraf',
+        isi: 'Sistem anti-phishing berbasis URL atau email tidak bisa mendeteksi social engineering yang terjadi melalui telepon atau percakapan langsung. Pertahanan utamanya adalah pemahaman Anda sendiri tentang bagaimana penipuan ini bekerja.',
+      },
+      { tipe: 'subjudul', isi: 'Aturan Emas: Verifikasi Terpisah' },
+      {
+        tipe: 'paragraf',
+        isi: 'Jika Anda menerima panggilan tak terduga dari bank yang meminta tindakan segera, tutup telepon dan hubungi bank melalui nomor resmi yang Anda temukan sendiri. Jangan gunakan nomor yang diberikan oleh penelepon.',
+      },
+      {
+        tipe: 'callout',
+        warna: 'amber',
+        isi: 'Ingat: Penipu yang baik bisa sangat meyakinkan. Rasa tidak nyaman atau tekanan untuk bertindak segera adalah tanda bahaya, bukan alasan untuk menurut.',
+      },
+    ],
+  },
+]
+
+export const KATEGORI_LIST = ['Semua', 'Edukasi', 'Panduan', 'Keamanan', 'Teknologi', 'Tips']

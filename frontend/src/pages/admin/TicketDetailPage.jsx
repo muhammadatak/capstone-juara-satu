@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import AdminSidebar from '../../components/AdminSidebar'
-import { StatusBadge, ValidationBadge, JenisBadge, ScoreRing } from '../../components/Badges'
+import { StatusBadge, ValidationBadge, JenisBadge, ScoreRing, DecisionBadge } from '../../components/Badges'
 import { useTickets } from '../../context/TicketContext'
-import ReactMarkdown from "react-markdown"
 
 // Label mapping untuk field tambahan per jenis
 const FIELD_LABELS = {
@@ -22,6 +21,7 @@ export default function TicketDetailPage() {
   const [overrideMode, setOverrideMode]   = useState(false)
   const [overrideScore, setOverrideScore] = useState('')
   const [adminNotes, setAdminNotes]       = useState('')
+  const [adminDecision, setAdminDecision] = useState('')
   const [confirmSaved, setConfirmSaved]   = useState(false)
 
   if (!ticket) return (
@@ -38,10 +38,14 @@ export default function TicketDetailPage() {
 
   const finalScore = ticket.adminOverrideScore ?? ticket.riskScore
 
+  const canValidate = adminDecision === 'phising' || adminDecision === 'legit'
+
   const handleValidate = (withOverride) => {
+    if (!canValidate) return
     validateTicket(ticket.id, {
       overrideScore: withOverride && overrideScore !== '' ? parseInt(overrideScore) : null,
       notes: adminNotes,
+      decision: adminDecision,
     })
     setConfirmSaved(true)
     setTimeout(() => setConfirmSaved(false), 3000)
@@ -57,6 +61,26 @@ export default function TicketDetailPage() {
   const extraFields = Object.entries(ticket.fieldValues || {}).filter(
     ([key, val]) => key !== 'pesan' && val && val.trim()
   )
+
+  const parseAiRows = (text) => {
+    if (!text) return []
+    return text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const cleaned = line.replace(/^\d+\)\s*|^\d+\.\s*/, '').trim()
+        const [labelPart, ...rest] = cleaned.split(':')
+        if (rest.length === 0) {
+          return { label: null, text: cleaned }
+        }
+        return { label: labelPart.trim(), text: rest.join(':').trim() }
+      })
+  }
+
+  const aiRows = parseAiRows(ticket.aiSuggestion)
+  const aiRowsReady = aiRows.length === 3
+  const hasCrawlData = Boolean(ticket.crawlFinalUrl || ticket.crawlScreenshotUrl)
 
   const riskLabel = finalScore >= 70 ? 'Tinggi' : finalScore >= 40 ? 'Sedang' : 'Rendah'
   const riskBadgeClass = finalScore >= 70
@@ -81,6 +105,7 @@ export default function TicketDetailPage() {
             <JenisBadge jenis={ticket.jenis} />
             <StatusBadge status={ticket.status} />
             <ValidationBadge validated={ticket.adminValidated} />
+            <DecisionBadge decision={ticket.adminDecision} />
             {ticket.adminOverrideScore != null && (
               <span className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
                 Override {ticket.riskScore} to {ticket.adminOverrideScore}
@@ -108,6 +133,24 @@ export default function TicketDetailPage() {
                 Skor <strong>{ticket.riskScore}/100</strong> adalah hasil analisis otomatis.
                 Review laporan di bawah, kemudian konfirmasi atau override skor sebelum tiket dilanjutkan.
               </p>
+
+              <div className="mb-3">
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Keputusan admin <span className="text-red-500">*</span>
+                </label>
+                <select
+                  className="input-field text-xs bg-white"
+                  value={adminDecision}
+                  onChange={(e) => setAdminDecision(e.target.value)}
+                >
+                  <option value="">Pilih keputusan...</option>
+                  <option value="phising">Phising</option>
+                  <option value="legit">Legit</option>
+                </select>
+                {!canValidate && (
+                  <p className="text-[11px] text-red-500 mt-1">Keputusan admin wajib dipilih.</p>
+                )}
+              </div>
 
               <div className="mb-3">
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">
@@ -141,7 +184,7 @@ export default function TicketDetailPage() {
               )}
 
               <div className="flex flex-wrap gap-2">
-                <button className="btn-red text-sm" onClick={() => handleValidate(overrideMode && overrideScore !== '')}>
+                <button className="btn-red text-sm" onClick={() => handleValidate(overrideMode && overrideScore !== '')} disabled={!canValidate}>
                   {overrideMode && overrideScore !== ''
                     ? `Konfirmasi dengan skor ${overrideScore}`
                     : 'Konfirmasi skor otomatis'}
@@ -195,12 +238,17 @@ export default function TicketDetailPage() {
               }`}>
                 {riskLabel} — {finalScore}/100
               </div>
-              <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                <div className="prose prose-sm max-w-none text-gray-600">
-                  <ReactMarkdown>
-                    {ticket.aiSuggestion || 'Tidak ada ai_suggestion dari backend.'}
-                  </ReactMarkdown>
-                </div>
+              <div className="mt-2 space-y-2 text-xs text-gray-600">
+                {aiRowsReady ? aiRows.map((row, index) => (
+                  <div key={`${row.label ?? 'row'}-${index}`} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
+                    <div className="w-24 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                      {row.label || `Baris ${index + 1}`}
+                    </div>
+                    <div className="text-gray-700 leading-relaxed">{row.text}</div>
+                  </div>
+                )) : (
+                  <div className="text-gray-500">Ringkasan AI belum tersedia.</div>
+                )}
                 {ticket.adminOverrideScore != null && (
                   <span className="text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
                     Override {ticket.riskScore} to {ticket.adminOverrideScore}
@@ -254,6 +302,46 @@ export default function TicketDetailPage() {
                     {ticket.whitelistCheck?.isWhitelisted ? 'Whitelist' : 'Tidak di whitelist'}
                   </div>
                 </div>
+
+                {hasCrawlData && (
+                  <div className="card p-5">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-100">
+                    Hasil Crawl URL
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-xs text-gray-400 mb-1">Final URL</div>
+                      {ticket.crawlFinalUrl ? (
+                        <a
+                          href={ticket.crawlFinalUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-mono text-blue-700 break-all hover:underline"
+                        >
+                          {ticket.crawlFinalUrl}
+                        </a>
+                      ) : (
+                        <div className="text-xs text-gray-500">Belum tersedia.</div>
+                      )}
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-400 mb-2">Screenshot</div>
+                      {ticket.crawlScreenshotUrl ? (
+                        <a href={ticket.crawlScreenshotUrl} target="_blank" rel="noreferrer">
+                          <img
+                            src={ticket.crawlScreenshotUrl}
+                            alt="Screenshot hasil crawl"
+                            className="w-full max-w-2xl rounded-lg border border-gray-200"
+                            loading="lazy"
+                          />
+                        </a>
+                      ) : (
+                        <div className="text-xs text-gray-500">Belum tersedia.</div>
+                      )}
+                    </div>
+                  </div>
+                  </div>
+                )}
               </div>
           </div>
 
