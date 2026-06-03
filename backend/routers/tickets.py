@@ -84,9 +84,15 @@ async def create_submission(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="URL is required for url ticket type",
             )
-        # crawl_result = await crawler.crawl(ticket_data.url)
-        # new_ticket.final_url = crawl_result["final_url"]
-        # new_ticket.screenshot_uuid = crawl_result["screenshot_uuid"]
+        try:
+            crawl_result = await crawler.crawl(ticket_data.url)
+            new_ticket.final_url = crawl_result["final_url"]
+            new_ticket.screenshot_uuid = crawl_result["screenshot_uuid"]
+        except Exception as e:
+            print(f"[URL Crawler] Error crawling {ticket_data.url}: {e}")
+            # Lanjutkan meski crawler gagal (graceful degradation)
+            new_ticket.final_url = ticket_data.url
+            new_ticket.screenshot_uuid = None
 
     db.add(new_ticket)
     await db.commit()
