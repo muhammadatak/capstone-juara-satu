@@ -5,13 +5,19 @@ from database import engine
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routers import tickets
+from routers import tickets, auth
 from services.url_crawler import crawler
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     try:
+        # Inisialisasi browser Playwright saat startup
+        try:
+            await crawler.initialize_browser()
+            print("[Crawler] Browser Playwright berhasil diinisialisasi")
+        except Exception as e:
+            print(f"[Crawler] Gagal inisialisasi browser: {e}")
         yield
     finally:
         await crawler.close()
@@ -34,5 +40,6 @@ app.mount(
     name="screenshots",
 )
 
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(tickets.router, prefix="/tickets", tags=["tickets"])
 app.include_router(admins.router, prefix="/admin/tickets", tags=["admins"])

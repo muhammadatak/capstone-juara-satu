@@ -1,4 +1,4 @@
-from schemas import TicketResponse, TicketUpdate, TicketCreate, TicketPublicResponse
+from schemas import TicketResponse, TicketUpdate
 
 
 from typing import Annotated
@@ -6,8 +6,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
+from services.auth import get_current_admin
 from services.email_utils import send_ticket_done
 
 import models
@@ -18,21 +18,26 @@ router = APIRouter()
 
 # ADMIN GET LIST TICKET
 @router.get("/ticket", response_model=list[TicketResponse])
-async def get_all_ticket(db: Annotated[AsyncSession, Depends(get_db)]):
+async def get_all_ticket(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _admin: Annotated[models.User, Depends(get_current_admin)],
+):
     result = await db.execute(select(models.Ticket))
     ticket = result.scalars().all()
-
     return ticket
 
 
 # ADMIN GET TICKET
 @router.get("/{ticket_id}", response_model=TicketResponse)
-async def get_ticket(ticket_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+async def get_ticket(
+    ticket_id: int,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    _admin: Annotated[models.User, Depends(get_current_admin)],
+):
     result = await db.execute(
         select(models.Ticket).where(models.Ticket.id == ticket_id)
     )
     ticket = result.scalars().first()
-
     if ticket:
         return ticket
     raise HTTPException(
@@ -47,6 +52,7 @@ async def update_ticket(
     background_task: BackgroundTasks,
     ticket_data: TicketUpdate,
     db: Annotated[AsyncSession, Depends(get_db)],
+    _admin: Annotated[models.User, Depends(get_current_admin)],
 ):
     result = await db.execute(
         select(models.Ticket).where(models.Ticket.id == ticket_id)

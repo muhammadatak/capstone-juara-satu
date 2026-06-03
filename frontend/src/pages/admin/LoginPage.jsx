@@ -14,8 +14,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 600))
-    const ok = login(form.email, form.password)
+    const ok = await login(form.email, form.password)
     setLoading(false)
     if (ok) navigate('/admin/dashboard')
   }

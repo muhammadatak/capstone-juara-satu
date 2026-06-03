@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import AdminSidebar from '../../components/AdminSidebar'
-import { StatusBadge, ValidationBadge, JenisBadge, ScoreRing, DecisionBadge } from '../../components/Badges'
+import { StatusBadge, ValidationBadge, JenisBadge, ScoreRing, DecisionBadge, AutoClassificationBadge } from '../../components/Badges'
 import { useTickets } from '../../context/TicketContext'
 
 // Label mapping untuk field tambahan per jenis
@@ -82,13 +82,6 @@ export default function TicketDetailPage() {
   const aiRowsReady = aiRows.length === 3
   const hasCrawlData = Boolean(ticket.crawlFinalUrl || ticket.crawlScreenshotUrl)
 
-  const riskLabel = finalScore >= 70 ? 'Tinggi' : finalScore >= 40 ? 'Sedang' : 'Rendah'
-  const riskBadgeClass = finalScore >= 70
-    ? 'bg-red-50 border-red-200 text-red-700'
-    : finalScore >= 40
-      ? 'bg-amber-50 border-amber-200 text-amber-700'
-      : 'bg-green-50 border-green-200 text-green-700'
-
   return (
     <div className="min-h-screen bg-[#900014] text-white flex">
       <AdminSidebar />
@@ -101,8 +94,9 @@ export default function TicketDetailPage() {
           </button>
           <div className="w-px h-5 bg-gray-200" />
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-base font-bold font-mono text-gray-800">#{ticket.id}</span>
+            <span className="text-base font-bold font-mono text-gray-800">{ticket.uuid}</span>
             <JenisBadge jenis={ticket.jenis} />
+            <AutoClassificationBadge classification={ticket.autoClassification} />
             <StatusBadge status={ticket.status} />
             <ValidationBadge validated={ticket.adminValidated} />
             <DecisionBadge decision={ticket.adminDecision} />
@@ -130,8 +124,8 @@ export default function TicketDetailPage() {
                 <h3 className="text-sm font-bold text-orange-800">Panel Validasi Admin</h3>
               </div>
               <p className="text-xs text-orange-700 mb-4">
-                Skor <strong>{ticket.riskScore}/100</strong> adalah hasil analisis otomatis.
-                Review laporan di bawah, kemudian konfirmasi atau override skor sebelum tiket dilanjutkan.
+                Risk level: <strong className="uppercase">{ticket.autoClassification || '—'}</strong>.
+                Review laporan di bawah, kemudian konfirmasi keputusan sebelum tiket dilanjutkan.
               </p>
 
               <div className="mb-3">
@@ -226,39 +220,32 @@ export default function TicketDetailPage() {
 
           {/* ─── SCORE OVERVIEW ────────────────────────────────────────── */}
           <div className={`card p-5 flex items-center gap-5 border-2 bg-white text-gray-800 ${
-            finalScore >= 70 ? 'border-red-200'
-            : finalScore >= 40 ? 'border-amber-200'
+            ticket.autoClassification === 'tinggi' ? 'border-red-200'
+            : ticket.autoClassification === 'sedang' ? 'border-amber-200'
             : 'border-green-200'
           }`}>
             <ScoreRing score={finalScore} />
             <div className="flex-1">
-              <div className="text-xs text-gray-500 mb-0.5">Skor Risiko Final</div>
+              <div className="text-xs text-gray-500 mb-0.5">ML Score</div>
               <div className={`text-xl font-bold ${
                 finalScore >= 70 ? 'text-red-700' : finalScore >= 40 ? 'text-amber-700' : 'text-green-700'
               }`}>
-                {riskLabel} — {finalScore}/100
+                {finalScore}/100
               </div>
-              <div className="mt-2 space-y-2 text-xs text-gray-600">
-                {aiRowsReady ? aiRows.map((row, index) => (
-                  <div key={`${row.label ?? 'row'}-${index}`} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
-                    <div className="w-24 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                      {row.label || `Baris ${index + 1}`}
-                    </div>
-                    <div className="text-gray-700 leading-relaxed">{row.text}</div>
-                  </div>
-                )) : (
-                  <div className="text-gray-500">Ringkasan AI belum tersedia.</div>
-                )}
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <AutoClassificationBadge classification={ticket.autoClassification} />
+                <span className="text-xs text-gray-500">
+                  Whitelist: {ticket.whitelistCheck?.isWhitelisted
+                    ? ticket.whitelistCheck?.whitelistValue || 'Terdaftar'
+                    : 'Tidak terdaftar'}
+                </span>
                 {ticket.adminOverrideScore != null && (
-                  <span className="text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
-                    Override {ticket.riskScore} to {ticket.adminOverrideScore}
+                  <span className="text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded text-xs">
+                    Override {ticket.riskScore} → {ticket.adminOverrideScore}
                   </span>
                 )}
               </div>
             </div>
-            <span className={`inline-block text-sm font-bold px-3 py-1.5 rounded-lg border ${riskBadgeClass}`}>
-              {riskLabel}
-            </span>
           </div>
 
           {/* ─── GRID INFO ─────────────────────────────────────────────── */}

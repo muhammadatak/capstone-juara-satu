@@ -9,6 +9,31 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+// Auto-attach JWT token ke setiap request admin
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('admin_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Auto-logout jika token expired (401)
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('admin_token')
+      localStorage.removeItem('admin_user')
+      // Redirect lembut — hanya jika bukan halaman login
+      if (window.location.pathname.startsWith('/admin') && window.location.pathname !== '/admin') {
+        window.location.href = '/admin'
+      }
+    }
+    return Promise.reject(err)
+  }
+)
+
 const TYPE_LABEL = {
   sms: 'SMS',
   whatsapp: 'WhatsApp',
@@ -46,10 +71,11 @@ const API_TO_UI_FIELD_MAP = {
   url: 'fieldValues.linkUrl',
   created_at: 'tanggal',
   status: 'status',
-  risk_score: 'riskScore',
+  ml_score: 'riskScore',
   admin_note: 'adminNotes',
   admin_decision: 'adminDecision',
   ai_suggestion: 'aiSuggestion',
+  auto_classification: 'autoClassification',
   whitelist_check: 'whitelistCheck',
   final_url: 'crawlFinalUrl',
   screenshot_uuid: 'crawlScreenshotUuid',
@@ -121,6 +147,7 @@ const toUiTicket = (raw, source = 'admin') => {
     adminNotes: raw.admin_note || '',
     adminDecision: raw.admin_decision || '',
     aiSuggestion: raw.ai_suggestion || '',
+    autoClassification: raw.auto_classification || '',
     crawlFinalUrl: raw.final_url || '',
     crawlScreenshotUuid: screenshotUuid,
     crawlScreenshotUrl: screenshotUrl,

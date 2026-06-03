@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import { useTickets } from '../../context/TicketContext'
@@ -250,7 +251,7 @@ export default function LaporanPage() {
 
       setResult({
         riskScore: created.riskScore || 0,
-        klasifikasi: created.riskScore >= 70 ? 'Tinggi' : created.riskScore >= 40 ? 'Sedang' : 'Rendah',
+        klasifikasi: created.autoClassification || '—',
         findings: [`Risk Score: ${created.riskScore}`],
         ticketId: created.uuid
       })
@@ -424,12 +425,19 @@ export default function LaporanPage() {
         {step === 3 && result && (
           <div className="space-y-4">
             <div className="bg-blue-50/95 border border-blue-100 rounded-xl p-5">
-              <div className="font-semibold text-blue-800 text-sm">Laporan berhasil dikirim</div>
-              <p className="text-blue-700 text-xs mt-1">
-                Nomor tiket Anda: <span className="font-mono font-bold">#{ticketId}</span>
+              <div className="font-semibold text-blue-800 text-sm">✅ Laporan berhasil dikirim</div>
+              <p className="text-blue-700 text-xs mt-2">
+                Nomor tiket Anda:{' '}
+                <span className="font-mono font-bold">{ticketId}</span>
               </p>
-              <p className="text-blue-700 text-xs mt-1">
-                Informasi selanjutnya akan kami kirimkan melalui email yang Anda daftarkan.
+              <Link
+                to={`/cek-status/${ticketId}`}
+                className="inline-block mt-2 text-sm font-semibold text-blue-700 hover:text-blue-900 underline"
+              >
+                Lihat status tiket →
+              </Link>
+              <p className="text-blue-600 text-xs mt-3">
+                Informasi selanjutnya juga akan kami kirimkan melalui email yang Anda daftarkan.
               </p>
             </div>
 

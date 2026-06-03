@@ -5,6 +5,29 @@ from datetime import datetime
 from models import TicketStatus, TicketType, AdminDecision
 
 
+# ── Auth ──────────────────────────────────────────────────────────
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1)
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    email: str
+    username: str
+
+
+class UserMeResponse(BaseModel):
+    email: str
+    username: str
+
+
+# ── Ticket ────────────────────────────────────────────────────────
+
+
 class WhitelistCheckItem(BaseModel):
     is_whitelisted: bool = Field(default=False)
     whitelist_value: str | None = Field(default=None)
@@ -31,6 +54,7 @@ class TicketPublicResponse(TicketBase):
     ai_suggestion: str | None = Field(default=None)
     risk_score: int | None = Field(default=None)
     whitelist_check: WhitelistCheckItem | None = Field(default=None)
+    auto_classification: str | None = Field(default=None)
     admin_decision: AdminDecision | None = Field(default=None)
     admin_note: str | None = Field(default=None)
     final_url: str | None = Field(default=None)
@@ -48,6 +72,7 @@ class TicketResponse(TicketBase):
     ai_suggestion: str | None = Field(default=None)
     whitelist_check: WhitelistCheckItem | None = Field(default=None)
     risk_score: int | None = Field(default=None)
+    auto_classification: str | None = Field(default=None)
     final_url: str | None = Field(default=None)
     screenshot_uuid: str | None = Field(default=None, max_length=36)
     status: TicketStatus

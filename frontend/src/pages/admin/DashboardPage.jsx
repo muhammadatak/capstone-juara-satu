@@ -91,7 +91,7 @@ export default function DashboardPage() {
               {recent.map((t) => (
                 <div key={t.id} onClick={() => navigate(`/admin/ticketing/${t.id}`)}
                   className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
-                  <div className="text-xs font-mono text-gray-400 w-16 flex-shrink-0">{t.id}</div>
+                  <div className="text-xs font-mono text-gray-400 w-36 flex-shrink-0">{t.uuid}</div>
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium text-gray-800 truncate">{t.pesan.substring(0, 70)}...</div>
                     <div className="flex items-center gap-1.5 mt-0.5">

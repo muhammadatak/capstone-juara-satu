@@ -38,9 +38,9 @@ def _combine_whitelist_result(
     url_value: str | None,
 ) -> dict:
     if not sender_ok:
-        return {"is_whitelisted": False, "whitelist_value": sender_value}
+        return {"is_whitelisted": False, "whitelist_value": None}
     if not url_ok:
-        return {"is_whitelisted": False, "whitelist_value": url_value}
+        return {"is_whitelisted": False, "whitelist_value": None}
     return {"is_whitelisted": True, "whitelist_value": sender_value}
 
 
@@ -67,7 +67,7 @@ def build_whitelist_check(ticket: Ticket):
         is_whitelisted, url_value = _is_url_whitelisted(ticket.url)
         return {
             "is_whitelisted": is_whitelisted,
-            "whitelist_value": url_value if is_whitelisted else ticket.url,
+            "whitelist_value": url_value if is_whitelisted else None,
         }
 
     return {"is_whitelisted": False, "whitelist_value": None}

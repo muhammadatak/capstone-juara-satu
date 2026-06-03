@@ -23,7 +23,7 @@ export default function App() {
             <Route path="/artikel" element={<ArtikelPage />} />
             <Route path="/artikel/:slug" element={<ArticleDetailPage />} />
             <Route path="/laporan" element={<LaporanPage />} />
-            <Route path="/cek-status" element={<CekStatusPage />} />
+            <Route path="/cek-status/:ticketUuid?" element={<CekStatusPage />} />
             <Route path="/admin" element={<LoginPage />} />
             <Route path="/admin/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/admin/ticketing" element={<ProtectedRoute><TicketingPage /></ProtectedRoute>} />

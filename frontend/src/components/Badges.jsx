@@ -81,6 +81,22 @@ export function ScoreRing({ score, size = 'md' }) {
   )
 }
 
+export function AutoClassificationBadge({ classification }) {
+  if (!classification) return null
+  const config = {
+    tinggi: { label: 'Tinggi', bg: 'bg-red-50 border-red-300 text-red-700' },
+    sedang: { label: 'Sedang', bg: 'bg-amber-50 border-amber-300 text-amber-700' },
+    rendah: { label: 'Rendah', bg: 'bg-green-50 border-green-300 text-green-700' },
+  }
+  const c = config[classification]
+  if (!c) return null
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full border ${c.bg}`}>
+      {c.label}
+    </span>
+  )
+}
+
 export function JenisBadge({ jenis }) {
   const map = {
     URL:       'bg-purple-50 text-purple-700 border-purple-200',

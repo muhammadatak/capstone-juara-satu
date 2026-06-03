@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import { useTickets } from '../../context/TicketContext'
@@ -39,40 +40,55 @@ function StatusTimeline({ status, validated }) {
 
 export default function CekStatusPage() {
   const { fetchPublicTicket } = useTickets()
+  const { ticketUuid } = useParams()
+  const navigate = useNavigate()
+
   const [inputId, setInputId] = useState('')
   const [searched, setSearched] = useState(false)
   const [ticket, setTicket] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleCek = async () => {
-    if (!inputId.trim()) return
-    const normalized = inputId.trim().toUpperCase()
-    setIsLoading(true)
-    setError('')
-    try {
-      const found = await fetchPublicTicket(normalized)
-      setTicket(found || null)
-      setSearched(true)
-    } catch (err) {
+  // Auto-fetch jika UUID ada di URL (survive refresh)
+  useEffect(() => {
+    if (ticketUuid) {
+      setIsLoading(true)
+      setError('')
+      const normalized = ticketUuid.trim().toUpperCase()
+      fetchPublicTicket(normalized)
+        .then((found) => {
+          setTicket(found || null)
+          setSearched(true)
+        })
+        .catch((err) => {
+          setTicket(null)
+          setSearched(true)
+          const backendMessage = err?.response?.data?.detail
+          setError(
+            backendMessage === 'Ticket not found'
+              ? 'Tiket tidak ditemukan'
+              : backendMessage || err?.message || 'Tiket tidak ditemukan'
+          )
+        })
+        .finally(() => setIsLoading(false))
+    } else {
+      // Reset saat kembali ke /cek-status tanpa UUID
+      setInputId('')
       setTicket(null)
-      setSearched(true)
-      const backendMessage = err?.response?.data?.detail
-      const message =
-        backendMessage === 'Ticket not found'
-          ? 'Tiket tidak ditemukan'
-          : backendMessage || err?.message || 'Tiket tidak ditemukan'
-      setError(message)
-    } finally {
+      setSearched(false)
+      setError('')
       setIsLoading(false)
     }
+  }, [ticketUuid])  // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleCek = async () => {
+    if (!inputId.trim()) return
+    // Persist UUID di URL agar survive refresh
+    navigate(`/cek-status/${inputId.trim().toUpperCase()}`, { replace: true })
   }
 
-  const finalScore = ticket ? (ticket.adminOverrideScore ?? ticket.riskScore) : 0
-  const scoreColor = finalScore >= 70 ? 'text-red-700' : finalScore >= 40 ? 'text-amber-700' : 'text-green-700'
-  const scoreLabel = finalScore >= 70 ? 'Bahaya' : finalScore >= 40 ? 'Waspada' : 'Aman'
-  const meterScore = Math.max(0, Math.min(finalScore, 100))
-  const meterPosition = Math.min(98, Math.max(2, meterScore))
+  const autoClass = ticket?.autoClassification || ''
+  const mlScore = ticket?.riskScore ?? 0
   const decisionValue = ticket?.adminDecision
   const decisionLabel = decisionValue === 'phising'
     ? 'Phising'
@@ -89,23 +105,13 @@ export default function CekStatusPage() {
   const reportDate = ticket?.createdAt ?? ticket?.tanggal
   const reportType = ticket?.type ?? ticket?.jenis
   const reporterName = ticket?.reporterName ?? ticket?.pelapor ?? 'Anonim'
-  const parseAiRows = (text) => {
-    if (!text) return []
-    return text
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const cleaned = line.replace(/^\d+\)\s*|^\d+\.\s*/, '').trim()
-        const [labelPart, ...rest] = cleaned.split(':')
-        if (rest.length === 0) {
-          return { label: null, text: cleaned }
-        }
-        return { label: labelPart.trim(), text: rest.join(':').trim() }
-      })
+
+  const classificationConfig = {
+    tinggi: { label: 'Tinggi', bg: 'bg-red-50', border: 'border-red-300', text: 'text-red-700', badge: 'bg-red-100 text-red-800', desc: 'Risiko tinggi — ML mendeteksi indikasi phishing dan sumber tidak dikenali.' },
+    sedang: { label: 'Sedang', bg: 'bg-amber-50', border: 'border-amber-300', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-800', desc: 'Risiko sedang — memerlukan pemeriksaan lebih lanjut oleh admin.' },
+    rendah: { label: 'Rendah', bg: 'bg-green-50', border: 'border-green-300', text: 'text-green-700', badge: 'bg-green-100 text-green-800', desc: 'Risiko rendah — ML tidak mendeteksi ancaman dan sumber dikenal.' },
   }
-  const aiRows = parseAiRows(ticket?.aiSuggestion)
-  const aiRowsReady = aiRows.length === 3
+  const cls = classificationConfig[autoClass] || null
   const hasCrawlData = Boolean(ticket?.crawlFinalUrl || ticket?.crawlScreenshotUrl)
 
   return (
@@ -150,71 +156,82 @@ export default function CekStatusPage() {
                     </div>
                   </div>
                 </div>
-                <div className="p-6 grid grid-cols-2 gap-6">
-                  <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-1">Informasi Laporan</p>
-                    <p className="text-sm font-medium text-gray-700 mb-3 truncate">{reporterName}</p>
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">Tanggal Laporan</p>
-                        <p className="text-xs text-gray-600">{new Date(reportDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                      </div>
-                      <div>
-                        <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">Jenis Laporan</p>
-                        <p className="text-xs text-gray-600">{reportType}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">Risk Meter</p>
-                    <div className="flex flex-col items-end gap-2 min-w-[180px]">
-                      <div className="w-full">
-                        <div className="relative h-2 rounded-full bg-gradient-to-r from-green-500 via-yellow-400 to-red-500">
-                          <span
-                            className="absolute -top-1 h-4 w-4 rounded-full border-2 border-white bg-gray-800"
-                            style={{ left: `${meterPosition}%`, transform: 'translateX(-50%)' }}
-                          />
-                        </div>
-                        <div className="flex justify-between text-[10px] text-gray-400 mt-1">
-                          <span>0</span>
-                          <span>50</span>
-                          <span>100</span>
-                        </div>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Risk Score <span className={`font-semibold ${scoreColor}`}>{meterScore}/100</span> · {scoreLabel}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        Hasil Analisis: <span className={`font-semibold ${decisionClass}`}>{decisionLabel}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
-                {ticket.adminValidated ? (
-                  <div className="mx-6 mb-4 rounded-lg border border-gray-300 bg-gray-100 p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">Pesan Admin</p>
-                    <p className="text-xs text-gray-700 mt-1">{ticket.adminNotes || 'Admin sudah memvalidasi laporan ini. Silakan pantau status sampai laporan selesai.'}</p>
-                  </div>
-                ) : (
-                  <div className="mx-6 mb-4 rounded-lg border border-orange-200 bg-orange-50 p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-orange-700">Versi Status: Menunggu Validasi Admin</p>
-                    <p className="text-xs text-orange-800 mt-1">Laporan masih dalam antrean review admin. Ringkasan AI bersifat awal dan dapat berubah setelah validasi.</p>
+                {/* Classification Badge */}
+                {cls && (
+                  <div className={`mx-6 mt-6 rounded-xl border-2 ${cls.border} ${cls.bg} p-4`}>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${cls.badge}`}>
+                          {cls.label}
+                        </span>
+                        <span className="ml-2 text-xs text-gray-500">
+                          ML Score: {mlScore}/100
+                        </span>
+                      </div>
+                    </div>
+                    <p className={`text-sm ${cls.text}`}>{cls.desc}</p>
+                    <p className="text-xs text-gray-500 mt-1.5">
+                      Whitelist: {ticket?.whitelistCheck?.isWhitelisted
+                        ? ticket.whitelistCheck?.whitelistValue || 'Terdaftar'
+                        : 'Tidak terdaftar'}
+                    </p>
                   </div>
                 )}
-                <div className="mx-6 mb-6 rounded-lg border border-gray-200 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">Ringkasan AI</p>
-                  <div className="space-y-2 text-xs text-gray-600">
-                    {aiRowsReady ? aiRows.map((row, index) => (
-                      <div key={`${row.label ?? 'row'}-${index}`} className="flex items-start gap-3 rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
-                        <div className="w-24 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                          {row.label || `Baris ${index + 1}`}
-                        </div>
-                        <div className="text-gray-700 leading-relaxed">{row.text}</div>
-                      </div>
-                    )) : (
-                      <div className="text-gray-500">Ringkasan AI belum tersedia.</div>
+
+                {/* Admin decision */}
+                {ticket.adminValidated && (
+                  <div className="mx-6 mt-4 rounded-lg border border-gray-300 bg-gray-100 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-700">Keputusan Admin</p>
+                    <p className={`text-sm font-bold mt-1 ${decisionClass}`}>{decisionLabel}</p>
+                    {ticket.adminNotes && (
+                      <p className="text-xs text-gray-700 mt-2 italic">"{ticket.adminNotes}"</p>
                     )}
+                  </div>
+                )}
+
+                {!ticket.adminValidated && (
+                  <div className="mx-6 mt-4 rounded-lg border border-orange-200 bg-orange-50 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-orange-700">Menunggu Validasi Admin</p>
+                    <p className="text-xs text-orange-800 mt-1">Laporan masih dalam antrean review admin.</p>
+                  </div>
+                )}
+
+                {/* Isi Pesan */}
+                <div className="mx-6 mt-4 rounded-lg border border-gray-200 bg-white p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">Isi Pesan</p>
+                  <pre className="text-xs text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">
+                    {ticket.pesan || '(Tidak ada pesan)'}
+                  </pre>
+                </div>
+
+                {/* Link / URL */}
+                {(ticket?.fieldValues?.linkUrl || ticket?.phishingEmail) && (
+                  <div className="mx-6 mt-3 rounded-lg border border-gray-200 bg-white p-4">
+                    {ticket?.fieldValues?.linkUrl && (
+                      <div className={ticket?.phishingEmail ? 'mb-3' : ''}>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">Link / URL</p>
+                        <p className="text-xs font-mono text-blue-700 break-all">{ticket.fieldValues.linkUrl}</p>
+                      </div>
+                    )}
+                    {ticket?.phishingEmail && (
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">Email Pengirim</p>
+                        <p className="text-xs font-mono text-gray-700">{ticket.phishingEmail}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Informasi Laporan */}
+                <div className="mx-6 mt-3 mb-2 grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-gray-200 bg-white p-3">
+                    <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">Pelapor</p>
+                    <p className="text-xs font-medium text-gray-700 truncate">{reporterName}</p>
+                  </div>
+                  <div className="rounded-lg border border-gray-200 bg-white p-3">
+                    <p className="text-[10px] uppercase tracking-wide text-gray-400 font-semibold">Jenis Laporan</p>
+                    <p className="text-xs font-medium text-gray-700">{reportType}</p>
                   </div>
                 </div>
 
@@ -266,13 +283,7 @@ export default function CekStatusPage() {
                 <p className="text-sm text-gray-600 mb-4">Ingin cek status tiket lain?</p>
                 <button
                   type="button"
-                  onClick={() => {
-                    setInputId('')
-                    setTicket(null)
-                    setSearched(false)
-                    setError('')
-                    setIsLoading(false)
-                  }}
+                  onClick={() => navigate('/cek-status')}
                   className="px-4 py-2 bg-red-700 border border-gray-300 rounded-lg text-xs font-semibold hover:bg-red-600 transition-colors"
                 >
                   Cek Status Ticket Lainnya

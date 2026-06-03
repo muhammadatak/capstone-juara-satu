@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import AdminSidebar from '../../components/AdminSidebar'
-import { RiskBadge, StatusBadge, JenisBadge, ScoreRing } from '../../components/Badges'
+import { RiskBadge, StatusBadge, JenisBadge, ScoreRing, AutoClassificationBadge } from '../../components/Badges'
 import { useTickets } from '../../context/TicketContext'
 
 const STATUS_TABS = ['Semua', 'Open', 'Investigasi', 'Closed']
@@ -24,7 +24,7 @@ export default function TicketingPage() {
       const matchRisiko   = risikoFilter === 'Semua'  || (risikoFilter === 'Tinggi' && score >= 70) || (risikoFilter === 'Sedang' && score >= 40 && score < 70) || (risikoFilter === 'Rendah' && score < 40)
       const matchValidasi = validasiFilter === 'Semua' || (validasiFilter === 'Pending' && !t.adminValidated) || (validasiFilter === 'Tervalidasi' && t.adminValidated)
       const matchJenis    = jenisFilter === 'Semua'   || t.jenis === jenisFilter
-      const matchSearch   = !search || t.id.toLowerCase().includes(search.toLowerCase()) || t.pelapor?.toLowerCase().includes(search.toLowerCase()) || t.pesan?.toLowerCase().includes(search.toLowerCase())
+      const matchSearch   = !search || t.uuid.toLowerCase().includes(search.toLowerCase()) || t.pelapor?.toLowerCase().includes(search.toLowerCase()) || t.pesan?.toLowerCase().includes(search.toLowerCase())
       return matchStatus && matchRisiko && matchValidasi && matchJenis && matchSearch
     })
     .sort((a, b) => {
@@ -57,7 +57,7 @@ export default function TicketingPage() {
           {/* Filters */}
           <div className="card p-4 bg-white/95">
             <div className="flex flex-wrap gap-3">
-              <input type="text" className="input-field flex-1 min-w-48" placeholder="Cari ID tiket, pelapor, atau isi pesan..."
+              <input type="text" className="input-field flex-1 min-w-48" placeholder="Cari UUID tiket, pelapor, atau isi pesan..."
                 value={search} onChange={(e) => setSearch(e.target.value)} />
               <select className="input-field w-36 bg-white" value={risikoFilter} onChange={(e) => setRisikoFilter(e.target.value)}>
                 <option value="Semua">Semua Risiko</option>
@@ -104,8 +104,9 @@ export default function TicketingPage() {
                   <ScoreRing score={finalScore} size="sm" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className="text-xs font-mono text-gray-400">{t.id}</span>
+                      <span className="text-xs font-mono text-gray-400">{t.uuid}</span>
                       <JenisBadge jenis={t.jenis} />
+                      <AutoClassificationBadge classification={t.autoClassification} />
                       <StatusBadge status={t.status} />
                       {!t.adminValidated && (
                         <span className="text-[10px] font-semibold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full">⏳ Pending</span>

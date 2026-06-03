@@ -41,6 +41,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    hashed_password: Mapped[str] = mapped_column(
+        String(128), nullable=False, default=""
+    )
 
 
 class Ticket(Base):
@@ -68,6 +71,7 @@ class Ticket(Base):
     whitelist_check: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     risk_score: Mapped[int] = mapped_column(Integer, nullable=True)
     ml_score: Mapped[int] = mapped_column(Integer, nullable=True)
+    auto_classification: Mapped[str | None] = mapped_column(String(20), nullable=True)
     status: Mapped[TicketStatus] = mapped_column(
         SAEnum(TicketStatus), default=TicketStatus.on_review.value, nullable=False
     )
