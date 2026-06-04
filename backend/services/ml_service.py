@@ -8,11 +8,8 @@ from transformers import (
     pipeline,
 )
 import torch
-from pathlib import Path
 
-# Get model path relative to this file
-MODEL_DIR = Path(__file__).resolve().parent / "model"
-model = str(MODEL_DIR)
+model = "D:\\capstone-juara-satu\\backend\\services\\model"
 tokenizer = AutoTokenizer.from_pretrained(model)
 model = AutoModelForSequenceClassification.from_pretrained(model)
 
