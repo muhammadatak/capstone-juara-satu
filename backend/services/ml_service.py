@@ -8,10 +8,11 @@ from transformers import (
     pipeline,
 )
 import torch
+from pathlib import Path
 
-model = "D:/FINAL_CAPSTONE_BACKEND/me/backend/services/model"
-tokenizer = AutoTokenizer.from_pretrained(model)
-model = AutoModelForSequenceClassification.from_pretrained(model)
+MODEL_DIR = Path(__file__).resolve().parent / "model"
+tokenizer = AutoTokenizer.from_pretrained(str(MODEL_DIR))
+model = AutoModelForSequenceClassification.from_pretrained(str(MODEL_DIR))
 
 
 def predict_text(data: str):

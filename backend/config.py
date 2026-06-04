@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 480
 
+    allowed_origins: str = "http://localhost:5174,http://localhost:5173"
+
     mail_server: str = "localhost"
     mail_port: int = 587
     mail_username: str = ""

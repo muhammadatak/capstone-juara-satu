@@ -115,8 +115,6 @@ export default function DashboardPage() {
           {/* Bottom stats */}
           <div className="grid grid-cols-3 gap-4">
             {[
-              { label: 'Akurasi Model ML', value: '87%', sub: 'Target min. 70% ✓', accent: 'border-l-red-500' },
-              { label: 'Avg. Response Time', value: '2.1h', sub: 'Target < 4 jam ✓', accent: 'border-l-blue-500' },
               { label: 'Closed Minggu Ini', value: stats.closed, sub: `Dari ${stats.total} total`, accent: 'border-l-green-500' },
             ].map((s) => (
               <div key={s.label} className={`card p-4 border-l-4 ${s.accent}`}>
