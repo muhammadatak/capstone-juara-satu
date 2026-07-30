@@ -1,4 +1,4 @@
-# AmbaPhish — Fraud and Phising Detection System
+# Phiseye — Fraud and Phising Detection System
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi)
